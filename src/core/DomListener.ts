@@ -1,5 +1,7 @@
+import {Dom} from "./dom";
+
 interface DomListenerProps {
-    root: HTMLElement
+    root: HTMLElement | Dom
 }
 
 export class DomListener {

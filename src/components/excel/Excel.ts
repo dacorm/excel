@@ -1,5 +1,5 @@
 import {Header} from "../header/Header";
-import {$} from "../../core/dom";
+import {$, Dom} from "../../core/dom";
 
 interface Options {
     components: (typeof Header)[];
@@ -11,10 +11,10 @@ interface ExcelProps {
 }
 
 export class Excel {
-    private el: Element;
+    private el: Dom;
     private components: typeof Header[];
     constructor({selector, options}: ExcelProps) {
-        this.el = document.querySelector(selector);
+        this.el = $(selector)
         this.components = options.components || [];
     }
 
@@ -26,7 +26,7 @@ export class Excel {
             const component = new Component({
                 root: el
             });
-            el.innerHTML = component.toHTML();
+            el.html(component.toHTML());
             root.append(el);
         })
 
