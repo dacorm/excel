@@ -16,7 +16,8 @@ export class Formula extends ExcelComponent {
       <div class="input" contenteditable spellcheck="false"></div>`
     }
 
-    onInput(event: any) {
+    onInput(event: Event) {
+        console.log(this.root)
         console.log('onInput', event)
     }
 }

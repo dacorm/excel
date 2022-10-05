@@ -16,6 +16,14 @@ export class Dom {
         return this
     }
 
+    on(eventType: string, callback: () => void) {
+        this.el.addEventListener(eventType, callback)
+    }
+
+    off(eventType: string, callback: () => void) {
+        this.el.removeEventListener(eventType, callback)
+    }
+
     append(node: Element | Dom) {
         if (node instanceof  Dom) {
             node = node.el
