@@ -8,11 +8,17 @@ export class Table extends ExcelComponent {
     constructor(root: DomListenerProps) {
         super(root, {
             name: 'Table',
-            listeners: []
+            listeners: ['mousedown']
         });
     }
 
     toHTML(): string {
         return createTable();
+    }
+
+    onMousedown(event: any) {
+        if (event.target.dataset.resize) {
+            console.log('start')
+        }
     }
 }
