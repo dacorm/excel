@@ -2,9 +2,11 @@ import {ExcelComponent} from "../../core/ExcelComponent";
 import {createTable} from "./table.template";
 import {DomListenerProps} from "../../core/DomListener";
 import {$} from "../../core/dom";
+import {TableSelection} from "./TableSelection";
 
 export class Table extends ExcelComponent {
     static className = 'excel__table'
+    private selection: TableSelection;
 
     constructor(root: DomListenerProps) {
         super(root, {
@@ -15,6 +17,17 @@ export class Table extends ExcelComponent {
 
     toHTML(): string {
         return createTable();
+    }
+
+    prepare() {
+        this.selection = new TableSelection();
+    }
+
+    init() {
+        super.init();
+        
+        const cell = this.root.find('[data-id="0:0"]');
+        this.selection.select(cell);
     }
 
     onMousedown(event: any) {
@@ -71,6 +84,9 @@ export class Table extends ExcelComponent {
                     right: 0
                 })
             }
+        } else if (event.target.dataset.type === 'cell') {
+            const target = $(event.target);
+            this.selection.select(target);
         }
     }
 }
