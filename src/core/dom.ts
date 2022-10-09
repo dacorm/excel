@@ -55,22 +55,42 @@ export class Dom {
     }
 
     findAll(selector: string) {
-        return this.el.querySelectorAll(selector)
+        return this.el.querySelectorAll(selector);
     }
 
     addClass(className: string) {
-        this.el.classList.add(className)
+        this.el.classList.add(className);
     }
 
     removeClass(className: string) {
-        this.el.classList.remove(className)
+        this.el.classList.remove(className);
+    }
+
+    id(parse: boolean = false) {
+        if (parse) {
+            const parsed: string[] = this.id().split(':');
+            return {
+                row: +parsed[0],
+                col: +parsed[1]
+            }
+        }
+        return this.data.id;
+    }
+
+    text(text: string) {
+        this.el.textContent = text;
+    }
+
+    focus() {
+        (this.el as HTMLInputElement).focus();
+        return this
     }
 
     css(styles:Record<string, string | number> = {}) {
         Object.keys(styles).forEach((key) => {
-            this.elem = (this.el) as HTMLElement
+            this.elem = (this.el) as HTMLElement;
             // @ts-ignore
-            this.elem.style[key] = styles[key]
+            this.elem.style[key] = styles[key];
         })
     }
 }

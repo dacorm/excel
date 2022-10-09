@@ -1,4 +1,4 @@
-import {ExcelComponent} from "../../core/ExcelComponent";
+import {ExcelComponent, OptionsI} from "../../core/ExcelComponent";
 import {createTable} from "./table.template";
 import {DomListenerProps} from "../../core/DomListener";
 import {$} from "../../core/dom";
@@ -8,10 +8,11 @@ export class Table extends ExcelComponent {
     static className = 'excel__table'
     private selection: TableSelection;
 
-    constructor(root: DomListenerProps) {
+    constructor(root: DomListenerProps, options: OptionsI) {
         super(root, {
             name: 'Table',
-            listeners: ['mousedown']
+            listeners: ['mousedown', 'keydown'],
+            ...options
         });
     }
 
@@ -28,6 +29,10 @@ export class Table extends ExcelComponent {
         
         const cell = this.root.find('[data-id="0:0"]');
         this.selection.select(cell);
+
+        this.on('Formula:input', (text) => {
+            this.selection.current.text(text);
+        })
     }
 
     onMousedown(event: any) {
@@ -37,7 +42,7 @@ export class Table extends ExcelComponent {
             const coords = parent.getCoords();
             const type = resizer.data.resize;
             const sideProp = type === 'col' ? 'bottom' : 'right';
-            let value: number
+            let value: number;
 
             resizer.css({
                 opacity: 1,
@@ -86,7 +91,71 @@ export class Table extends ExcelComponent {
             }
         } else if (event.target.dataset.type === 'cell') {
             const target = $(event.target);
-            this.selection.select(target);
+            if (event.shiftKey) {
+                const targetParsed = target.id(true);
+                const current = this.selection.current.id(true);
+
+                const cols = range(current.col, targetParsed.col);
+                const rows = range(current.row, targetParsed.row);
+
+                const ids = cols.reduce((acc, col) => {
+                    rows.forEach((row) => {
+                        acc.push(`${row}:${col}`);
+                    })
+                    return acc
+                }, []);
+
+                const cells = ids.map((id) => {
+                    return this.root.find(`[data-id="${id}"]`);
+                });
+                this.selection.selectGroup(cells);
+            } else {
+                this.selection.select(target);
+            }
         }
     }
+
+    onKeydown(event: KeyboardEvent) {
+        const keys = ['Enter', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp'];
+        const { key } = event;
+        if (keys.includes(key) && !event.shiftKey) {
+            event.preventDefault();
+            const id = this.selection.current.id(true);
+            const next = this.root.find(nextSelector(key, id));
+            this.selection.select(next);
+
+        }
+    }
+}
+
+export function range(start: number, end: number) {
+    if (start > end) {
+        [end, start] = [start, end]
+    }
+    return new Array(end - start + 1).fill('').map((_, index) => {
+        return start + index;
+    });
+}
+
+function nextSelector(key: string, { col, row }: Record<string, number>) {
+    const MIN_VALUE = 0;
+
+    switch (key) {
+        case 'Enter':
+        case 'ArrowDown':
+            row++
+            break
+        case 'Tab':
+        case 'ArrowRight':
+            col++
+            break
+        case 'ArrowLeft':
+            col = col - 1 < MIN_VALUE ? MIN_VALUE : col - 1
+            break
+        case 'ArrowUp':
+            row = row - 1 < MIN_VALUE ? MIN_VALUE : row - 1
+            break
+    }
+
+    return `[data-id="${row}:${col}"]`
 }

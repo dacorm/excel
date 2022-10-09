@@ -4,14 +4,17 @@ export class TableSelection {
     static className = 'selected'
 
     private group: Dom[];
+    current: Dom | null;
     constructor() {
         this.group = []
+        this.current = null
     }
 
     select(el: Dom) {
         this.clear();
-        el.addClass(TableSelection.className);
+        el.focus().addClass(TableSelection.className);
         this.group.push(el);
+        this.current = el;
     }
 
     clear() {
@@ -21,7 +24,11 @@ export class TableSelection {
         this.group = [];
     }
 
-    selectGroup() {
-
+    selectGroup(group: Dom[] = []) {
+        this.clear();
+        this.group = group;
+        this.group.forEach((el) => {
+            el.addClass(TableSelection.className);
+        })
     }
 }
