@@ -77,8 +77,15 @@ export class Dom {
         return this.data.id;
     }
 
-    text(text: string) {
-        this.el.textContent = text;
+    text(text?: string) {
+        if (typeof text === 'string') {
+            this.el.textContent = text;
+            return this;
+        }
+        if (this.el.tagName.toLowerCase() === 'input') {
+            return (this.el as HTMLInputElement).value.trim();
+        }
+        return this.el.textContent.trim();
     }
 
     focus() {
