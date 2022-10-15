@@ -3,6 +3,7 @@ import {createTable} from "./table.template";
 import {DomListenerProps} from "../../core/DomListener";
 import {$, Dom} from "../../core/dom";
 import {TableSelection} from "./TableSelection";
+import {tableResize} from "../../redux/actions";
 
 export class Table extends ExcelComponent {
     static className = 'excel__table'
@@ -42,10 +43,11 @@ export class Table extends ExcelComponent {
     selectCell(cell: Dom) {
         this.selection.select(cell);
         this.emit('table:select', cell);
+        this.dispatch({ type: 'TEST' })
     }
 
-    onMousedown(event: any) {
-        if (event.target.dataset.resize) {
+    resizeTable(event: any) {
+        return new Promise((resolve) => {
             const resizer = $(event.target);
             const parent = resizer.closest('[data-type="resizable"]');
             const coords = parent.getCoords();
@@ -92,12 +94,32 @@ export class Table extends ExcelComponent {
                     })
                 }
 
+                resolve({
+                    value,
+                    id: type === 'col' ? parent.data.col : null
+                });
+
                 resizer.css({
                     opacity: 0,
                     bottom: 0,
                     right: 0
                 })
             }
+        })
+    }
+
+    async resizeHandler(event: any) {
+        try {
+            const data = await this.resizeTable(event);
+            this.dispatch(tableResize(data));
+        } catch (e) {
+            console.warn(e);
+        }
+    }
+
+    onMousedown(event: any) {
+        if (event.target.dataset.resize) {
+            this.resizeHandler(event);
         } else if (event.target.dataset.type === 'cell') {
             const target = $(event.target);
             if (event.shiftKey) {
@@ -119,7 +141,7 @@ export class Table extends ExcelComponent {
                 });
                 this.selection.selectGroup(cells);
             } else {
-                this.selection.select(target);
+                this.selectCell(target);
             }
         }
     }

@@ -2,9 +2,11 @@ import {Header} from "../header/Header";
 import {$, Dom} from "../../core/dom";
 import {Emitter} from "../../core/Emitter";
 import {ExcelComponent} from "../../core/ExcelComponent";
+import {Store} from "../../core/createStore";
 
 interface Options {
     components: (typeof Header)[];
+    store: Store
 }
 
 interface ExcelProps {
@@ -17,9 +19,11 @@ export class Excel {
     private components: typeof Header[];
     private newComponents: Header[];
     private emitter: Emitter;
+    private store: Store;
     constructor({selector, options}: ExcelProps) {
         this.el = $(selector)
         this.components = options.components || [];
+        this.store = options.store;
         this.emitter = new Emitter();
     }
 
@@ -27,7 +31,8 @@ export class Excel {
         const root = $.create('div', 'excel');
 
         const componentOptions = {
-            emitter: this.emitter
+            emitter: this.emitter,
+            store: this.store
         }
 
         this.newComponents = this.components.map((Component) => {
