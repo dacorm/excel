@@ -13,7 +13,7 @@ export class ExcelComponent extends DomListener {
     private name: string;
     protected emitter: Emitter;
     private unsubscribers: (() => void)[];
-    private store: Store;
+    protected store: Store;
     private storeSub: { unsubscribe: () => void } | null;
     constructor(root: DomListenerProps, options: OptionsI = {}) {
         super(root, options.listeners);

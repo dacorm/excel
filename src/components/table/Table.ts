@@ -18,7 +18,7 @@ export class Table extends ExcelComponent {
     }
 
     toHTML(): string {
-        return createTable();
+        return createTable(20, this.store.getState());
     }
 
     prepare() {
@@ -46,9 +46,9 @@ export class Table extends ExcelComponent {
         this.dispatch({ type: 'TEST' })
     }
 
-    resizeTable(event: any) {
+    resizeTable(event: Event) {
         return new Promise((resolve) => {
-            const resizer = $(event.target);
+            const resizer = $(event.target as HTMLDivElement);
             const parent = resizer.closest('[data-type="resizable"]');
             const coords = parent.getCoords();
             const type = resizer.data.resize;
@@ -96,7 +96,8 @@ export class Table extends ExcelComponent {
 
                 resolve({
                     value,
-                    id: type === 'col' ? parent.data.col : null
+                    type,
+                    id: parent.data[type]
                 });
 
                 resizer.css({
@@ -108,7 +109,7 @@ export class Table extends ExcelComponent {
         })
     }
 
-    async resizeHandler(event: any) {
+    async resizeHandler(event: Event) {
         try {
             const data = await this.resizeTable(event);
             this.dispatch(tableResize(data));
@@ -117,12 +118,12 @@ export class Table extends ExcelComponent {
         }
     }
 
-    onMousedown(event: any) {
-        if (event.target.dataset.resize) {
+    onMousedown(event: Event) {
+        if ((event.target as HTMLDivElement).dataset.resize) {
             this.resizeHandler(event);
-        } else if (event.target.dataset.type === 'cell') {
-            const target = $(event.target);
-            if (event.shiftKey) {
+        } else if ((event.target as HTMLDivElement).dataset.type === 'cell') {
+            const target = $(event.target as HTMLDivElement);
+            if ((event as KeyboardEvent).shiftKey) {
                 const targetParsed = target.id(true);
                 const current = this.selection.current.id(true);
 
@@ -157,8 +158,8 @@ export class Table extends ExcelComponent {
         }
     }
 
-    onInput(event: any) {
-        this.emit('table:input', $(event.target))
+    onInput(event: Event) {
+        this.emit('table:input', $(event.target as HTMLDivElement))
     }
 }
 
