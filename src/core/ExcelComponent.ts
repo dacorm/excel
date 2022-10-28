@@ -10,7 +10,7 @@ export interface OptionsI {
 }
 
 export class ExcelComponent extends DomListener {
-    private name: string;
+    name: string;
     protected emitter: Emitter;
     private unsubscribers: (() => void)[];
     protected store: Store;
@@ -22,7 +22,6 @@ export class ExcelComponent extends DomListener {
         this.store = options.store;
         this.unsubscribers = [];
         this.storeSub = null;
-        
         this.prepare();
     }
 
@@ -38,8 +37,18 @@ export class ExcelComponent extends DomListener {
         this.store.dispatch(action);
     }
 
+    storeChanged(changes: { [p: string]: any }) {
+
+    }
+
     subscribe(fn: (...args: any) => void) {
         this.storeSub = this.store.subscribe(fn);
+    }
+
+    isWatching(key: string) {
+        if (this.subscribe) {
+            return this.subscribe;
+        }
     }
 
     emit(event: string, ...args: any) {
@@ -60,6 +69,5 @@ export class ExcelComponent extends DomListener {
         this.unsubscribers.forEach((el) => {
             el();
         });
-        this.storeSub.unsubscribe();
     }
 }

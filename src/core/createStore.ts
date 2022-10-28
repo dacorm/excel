@@ -5,7 +5,6 @@ export interface Action {
 
 export interface State {
     [key: string]: any
-
 }
 
 export interface Store {
@@ -34,7 +33,7 @@ export function createStore(rootReducer: (state: State, action: Action) => {}, i
             })
         },
         getState() {
-            return state;
+            return JSON.parse(JSON.stringify(state));
         },
     }
 }

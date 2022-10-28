@@ -7,7 +7,7 @@ export interface DomListenerProps extends Dom {
 
 export class DomListener {
     protected root: DomListenerProps;
-    private listeners: string[];
+    listeners: string[];
 
     constructor(root: DomListenerProps, listeners: string[] = []) {
         if (!root) {

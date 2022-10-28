@@ -1,8 +1,8 @@
 import {Header} from "../header/Header";
 import {$, Dom} from "../../core/dom";
 import {Emitter} from "../../core/Emitter";
-import {ExcelComponent} from "../../core/ExcelComponent";
 import {Store} from "../../core/createStore";
+import {Formula} from "../formula/Formula";
 
 interface Options {
     components: (typeof Header)[];

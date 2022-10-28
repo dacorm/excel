@@ -1,6 +1,7 @@
 import {ExcelComponent, OptionsI} from "../../core/ExcelComponent";
 import {DomListenerProps} from "../../core/DomListener";
 import {$, Dom} from "../../core/dom";
+import {State} from "../../core/createStore";
 
 export class Formula extends ExcelComponent {
     static className = 'excel__formula'
@@ -28,9 +29,13 @@ export class Formula extends ExcelComponent {
             this.formula.text(cell.text())
         })
 
-        this.on('table:input', (cell) => {
-            this.formula.text(cell.text())
+        this.subscribe((state: State) => {
+            this.formula.text(state.currentText)
         })
+    }
+
+    storeChanged(changes: { [p: string]: any }) {
+        console.log('changes', changes)
     }
 
     onInput(event: { target: HTMLDivElement }) {

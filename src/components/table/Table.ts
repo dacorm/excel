@@ -3,7 +3,7 @@ import {createTable} from "./table.template";
 import {DomListenerProps} from "../../core/DomListener";
 import {$, Dom} from "../../core/dom";
 import {TableSelection} from "./TableSelection";
-import {tableResize} from "../../redux/actions";
+import {changeText, tableResize} from "../../redux/actions";
 
 export class Table extends ExcelComponent {
     static className = 'excel__table'
@@ -33,6 +33,7 @@ export class Table extends ExcelComponent {
 
         this.on('Formula:input', (text) => {
             this.selection.current.text(text);
+            this.updateTextInStore(text);
         })
 
         this.on('formula:done', () => {
@@ -158,8 +159,15 @@ export class Table extends ExcelComponent {
         }
     }
 
+    updateTextInStore(value: string | Dom) {
+        this.dispatch(changeText({
+            id: this.selection.current.id(),
+            value,
+        }));
+    }
+
     onInput(event: Event) {
-        this.emit('table:input', $(event.target as HTMLDivElement))
+        this.updateTextInStore($(event.target as HTMLDivElement).text())
     }
 }
 
